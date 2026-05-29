@@ -1,0 +1,124 @@
+{% comment %}
+  VIP Price App Block — product page
+
+  Renders the VIP/wholesale price when:
+    1. The visitor is a logged-in customer, AND
+    2. The customer has the "vip" tag, AND
+    3. The current product variant has a non-empty custom.vip_price metafield.
+
+  Updates instantly when the customer changes variant (no page reload):
+  variant VIP prices are pre-loaded into a JS Map keyed by variant id.
+{% endcomment %}
+
+{%- liquid
+  assign show_for_vip = false
+  if customer
+    for tag in customer.tags
+      assign tag_lower = tag | downcase
+      if tag_lower == 'vip'
+        assign show_for_vip = true
+      endif
+    endfor
+  endif
+-%}
+
+{%- if show_for_vip and product -%}
+
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign current_vip_raw = current_variant.metafields.custom.vip_price -%}
+  {%- assign current_vip = current_vip_raw | plus: 0 -%}
+  {%- assign current_normal_money = current_variant.price -%}
+  {%- assign current_normal = current_normal_money | divided_by: 100.0 -%}
+
+  {%- assign has_vip_for_current = false -%}
+  {%- if current_vip_raw != blank and current_vip > 0 and current_vip < current_normal -%}
+    {%- assign has_vip_for_current = true -%}
+  {%- endif -%}
+
+  <div
+    class="vip-price-block"
+    data-vip-price-block
+    data-product-id="{{ product.id }}"
+    data-current-variant-id="{{ current_variant.id }}"
+    {% if has_vip_for_current %}data-vip-active="true"{% endif %}
+  >
+    {% if has_vip_for_current %}
+      <div class="vip-price-block__container">
+        <div class="vip-price-block__label" data-vip-label>{{ block.settings.label_text }}</div>
+        <div class="vip-price-block__prices">
+          <span class="vip-price-block__price" data-vip-price>
+            {{ current_vip_raw | times: 100 | money }}
+          </span>
+          <span class="vip-price-block__strike" data-vip-strike>
+            {{ current_variant.price | money }}
+          </span>
+        </div>
+        <div class="vip-price-block__savings" data-vip-savings>
+          {%- assign saving = current_normal | minus: current_vip -%}
+          {{ block.settings.savings_text }}
+          {{ saving | times: 100 | money }}
+        </div>
+      </div>
+    {% else %}
+      <div class="vip-price-block__container" style="display:none;">
+        <div class="vip-price-block__label" data-vip-label>{{ block.settings.label_text }}</div>
+        <div class="vip-price-block__prices">
+          <span class="vip-price-block__price" data-vip-price></span>
+          <span class="vip-price-block__strike" data-vip-strike></span>
+        </div>
+        <div class="vip-price-block__savings" data-vip-savings></div>
+      </div>
+    {% endif %}
+  </div>
+
+  {%- comment -%}
+    Pre-load all variant VIP prices and normal prices into a JS map.
+    Money is rendered using Shopify's money format on the server then we send
+    raw amounts for safe per-variant recomputation.
+  {%- endcomment -%}
+  <script type="application/json" data-vip-variants="{{ product.id }}">
+    {
+      "variants": {
+        {%- for v in product.variants -%}
+          {%- assign vip_raw = v.metafields.custom.vip_price -%}
+          "{{ v.id }}": {
+            "normal": {{ v.price | divided_by: 100.0 | json }},
+            "normal_money": {{ v.price | money | json }},
+            "vip": {% if vip_raw != blank %}{{ vip_raw | json }}{% else %}null{% endif %},
+            "vip_money": {% if vip_raw != blank %}{{ vip_raw | times: 100 | money | json }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      },
+      "currencySymbol": {{ shop.currency | json }},
+      "labels": {
+        "label": {{ block.settings.label_text | json }},
+        "savings": {{ block.settings.savings_text | json }}
+      }
+    }
+  </script>
+
+  {{ 'vip-price.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'vip-price.js' | asset_url }}" defer></script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "VIP Price",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Label text",
+      "default": "VIP Price"
+    },
+    {
+      "type": "text",
+      "id": "savings_text",
+      "label": "Savings prefix text",
+      "default": "You save"
+    }
+  ]
+}
+{% endschema %}

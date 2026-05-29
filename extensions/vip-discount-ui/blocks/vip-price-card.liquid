@@ -1,0 +1,36 @@
+{% comment %}
+  VIP Price App Block — collection / listing card variant.
+
+  Add this block to a product-card section in the theme editor. It renders
+  a compact VIP price next to the card price for logged-in VIP customers.
+
+  This block is a thin wrapper around the `vip-price-collection` snippet.
+{% endcomment %}
+
+{%- if product -%}
+  {% render 'vip-price-collection',
+            product: product,
+            label_text: block.settings.label_text,
+            show_strike: block.settings.show_strike %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "VIP Price (card)",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Badge text",
+      "default": "VIP"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_strike",
+      "label": "Show original price (strikethrough)",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

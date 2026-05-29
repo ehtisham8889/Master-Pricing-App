@@ -1,0 +1,65 @@
+{% comment %}
+  VIP Price — collection / listing snippet
+
+  Renders a compact VIP price badge + price next to a product card.
+  Intended to be rendered from a custom product-card.liquid like:
+
+    {% render 'vip-price-collection', product: product %}
+
+  Or from inside an app block targeting `section` on collection cards.
+
+  Behavior:
+    - Only renders for logged-in customers tagged "vip".
+    - Uses the FIRST AVAILABLE variant's vip_price (collection cards don't
+      have a "selected" variant context).
+    - Hides entirely if no vip_price is set or vip_price >= normal price.
+
+  Required parameter:
+    product — a Liquid product object
+
+  Optional parameters:
+    label_text     — defaults to "VIP"
+    show_strike    — defaults to true; set false to hide the regular price
+{% endcomment %}
+
+{%- liquid
+  assign show_for_vip = false
+  if customer
+    if customer.tags contains 'vip'
+      assign show_for_vip = true
+    endif
+  endif
+
+  assign _label = label_text | default: 'VIP'
+  if show_strike == nil
+    assign show_strike = true
+  endif
+-%}
+
+{%- if show_for_vip and product -%}
+  {%- assign card_variant = product.selected_or_first_available_variant -%}
+  {%- assign card_vip_raw = card_variant.metafields.custom.vip_price -%}
+  {%- if card_vip_raw != blank -%}
+    {%- assign card_vip = card_vip_raw | plus: 0 -%}
+    {%- assign card_normal = card_variant.price | divided_by: 100.0 -%}
+    {%- if card_vip > 0 and card_vip < card_normal -%}
+      <span
+        class="vip-price-card"
+        data-vip-price-card
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ card_variant.id }}"
+      >
+        <span class="vip-price-card__badge">{{ _label }}</span>
+        <span class="vip-price-card__price" data-vip-price>
+          {{ card_vip_raw | times: 100 | money }}
+        </span>
+        {%- if show_strike -%}
+          <span class="vip-price-card__strike" data-vip-strike>
+            {{ card_variant.price | money }}
+          </span>
+        {%- endif -%}
+      </span>
+      {{ 'vip-price.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}

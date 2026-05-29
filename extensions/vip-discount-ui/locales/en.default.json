@@ -1,0 +1,27 @@
+{
+  "vip_price": {
+    "name": "VIP Price",
+    "settings": {
+      "label_text": {
+        "label": "Label text",
+        "default": "VIP Price"
+      },
+      "savings_text": {
+        "label": "Savings prefix text",
+        "default": "You save"
+      }
+    }
+  },
+  "vip_price_card": {
+    "name": "VIP Price (card)",
+    "settings": {
+      "label_text": {
+        "label": "Badge text",
+        "default": "VIP"
+      },
+      "show_strike": {
+        "label": "Show original price (strikethrough)"
+      }
+    }
+  }
+}

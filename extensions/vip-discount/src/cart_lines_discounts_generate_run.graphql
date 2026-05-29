@@ -1,0 +1,32 @@
+query RunInput {
+  cart {
+    buyerIdentity {
+      customer {
+        hasVipTag: hasAnyTag(tags: ["vip"])
+      }
+    }
+    lines {
+      id
+      quantity
+      cost {
+        amountPerQuantity {
+          amount
+          currencyCode
+        }
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          vipPrice: metafield(namespace: "custom", key: "vip_price") {
+            value
+            type
+          }
+        }
+      }
+    }
+  }
+  discount {
+    discountClasses
+  }
+}

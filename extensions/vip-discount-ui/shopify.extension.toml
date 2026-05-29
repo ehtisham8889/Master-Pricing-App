@@ -1,0 +1,7 @@
+api_version = "2024-10"
+uid = "79a6e91d-3f0b-f0a2-f878-0b79e2ee0e40e83066ed"
+
+[[extensions]]
+type = "theme"
+name = "vip-discount-ui"
+handle = "vip-discount-ui"

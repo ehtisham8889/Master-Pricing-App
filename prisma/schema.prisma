@@ -1,0 +1,50 @@
+// Prisma schema for the VIP Pricing app
+// - Session: required by @shopify/shopify-app-session-storage-prisma
+// - VipPriceJob: tracks each CSV upload + its progress
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = env("DATABASE_PROVIDER")
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+model VipPriceJob {
+  id           String   @id @default(cuid())
+  shop         String
+  status       String   @default("pending") // pending | running | done | error
+  totalRows    Int      @default(0)
+  processedRows Int     @default(0)
+  successCount Int      @default(0)
+  failureCount Int      @default(0)
+  deletedCount Int      @default(0)
+  errorMessage String?
+  // JSON-encoded array of { sku, message }
+  failures     String   @default("[]")
+  // JSON-encoded array of CSV rows { sku, vipPrice }
+  payload      String   @default("[]")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([shop, createdAt])
+}

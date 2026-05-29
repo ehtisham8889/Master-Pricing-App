@@ -1,0 +1,107 @@
+/*
+ * VIP Price block — minimal, blends with theme's native price style
+ */
+
+.vip-price-block {
+  margin: 4px 0;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.vip-price-block__container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vip-price-block__label {
+  display: none; /* hidden — VIP badge is shown inline instead */
+}
+
+.vip-price-block__prices {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Main VIP price — matches theme's h2/price size via em units */
+.vip-price-block__price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Small VIP badge next to the price */
+.vip-price-block__price::after {
+  content: "VIP";
+  font-size: 0.55em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #b8860b;
+  border: 1px solid #b8860b;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Original price, struck through */
+.vip-price-block__strike {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Savings line — subtle */
+.vip-price-block__savings {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #2e7d32;
+}
+
+/* Hide theme's regular price when VIP is active */
+[data-vip-active="true"] ~ .price,
+[data-vip-active="true"] ~ .price--main,
+.shopify-section:has([data-vip-active="true"]) .price__regular,
+.product-info:has([data-vip-active="true"]) .price,
+.product__info-wrapper:has([data-vip-active="true"]) .price,
+.product-form__info-list:has([data-vip-active="true"]) .price {
+  display: none !important;
+}
+
+/* Collection card variant */
+.vip-price-card {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.vip-price-card__badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #b8860b;
+  padding: 1px 5px;
+  border: 1px solid #b8860b;
+  border-radius: 3px;
+}
+
+.vip-price-card__price {
+  font-weight: 700;
+  color: inherit;
+}
+
+.vip-price-card__strike {
+  font-size: 0.85em;
+  color: #999;
+  text-decoration: line-through;
+}
+
+@media (max-width: 480px) {
+  .vip-price-block__price { font-size: 1.2rem; }
+}

@@ -1,0 +1,6 @@
+name = "vip-pricing-app"
+roles = ["backend", "frontend"]
+webhooks_version = "2024-10"
+
+[commands]
+dev = "npm exec remix vite:dev"
