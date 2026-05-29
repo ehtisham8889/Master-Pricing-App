@@ -16,6 +16,7 @@
     "shopify": "shopify",
     "prisma": "prisma",
     "graphql-codegen": "graphql-codegen"
+    "postinstall": "prisma generate",
   },
   "type": "module",
   "engines": {
