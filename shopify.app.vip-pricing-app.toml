@@ -2,7 +2,7 @@
 
 client_id = "e8cf5fd14b4c0b1476138a3b4f749d45"
 name = "vip-pricing-app"
-application_url = "https://example.com"
+application_url = "https://master-pricing-app.onrender.com"
 embedded = true
 
 [build]
@@ -17,7 +17,7 @@ scopes = "read_customers,read_discounts,read_products,write_discounts,write_prod
 
 [auth]
 redirect_urls = [
-  "https://example.com/auth/callback",
-  "https://example.com/auth/shopify/callback",
-  "https://example.com/api/auth/callback"
+  "https://master-pricing-app.onrender.com/auth/callback",
+  "https://master-pricing-app.onrender.com/auth/shopify/callback",
+  "https://master-pricing-app.onrender.com/api/auth/callback"
 ]
